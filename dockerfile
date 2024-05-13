@@ -11,10 +11,10 @@ WORKDIR /app
 COPY . /app
 
 # 安装 requirements.txt 中指定的任何需要的程序包
-# RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install  -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# 使端口 5000 可供此容器外的环境使用
+
+# 使端口 8080 可供此容器外的环境使用
 EXPOSE 8080
 
 
