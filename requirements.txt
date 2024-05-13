@@ -4,6 +4,7 @@ flask
 requests
 flask-cors
 bcut-asr-branch
-python-ffmpeg
+
 bilix
 youtube-transcript-api
+
