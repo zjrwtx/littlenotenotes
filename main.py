@@ -7,7 +7,9 @@ import openai
 import  json
 from dotenv import load_dotenv
 import os
-
+from bilibiliapi import get_bilibili_summary
+from webpageapi import get_summary
+from youtubeapi import get_youtube_summary
 from base64 import b64encode
 app = Flask(__name__)
 
@@ -21,11 +23,6 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 load_dotenv()
 
 # 现在可以通过os.environ访问这些值
-
-API_BASE = "https://api.lingyiwanwu.com/v1"
-API_KEY = "a6022274cd8b44f182c5166cc4cc48bc"
-# API_BASE = os.environ.get("API_BASE")
-# API_KEY = os.environ.get("API_KEY")
 # 前后端认证调用apikey
 SECRET_API_KEY =os.environ.get("SECRET_API_KEY") 
 
@@ -45,28 +42,7 @@ def require_apikey(view_function):
             return jsonify({"error": "Invalid or missing API key"}), 403
 
     return decorated_function
-def get_summary(original_url):
-    
-    client = openai.OpenAI(api_key=API_KEY, base_url=API_BASE)
 
-    reader_url = f"https://r.jina.ai/{original_url}"
-    json_response = requests.get(reader_url, headers={"Accept": "application/json"})
-
-    if json_response.status_code == 200:
-        json_data = json_response.json()
-        markdown_content = f"文档名称:{json_data['data']['title']}\n文档原地址:{json_data['data']['url']}\n{json_data['data']['content']}"
-
-        completion = client.chat.completions.create(
-            model="yi-medium-200k",
-            max_tokens=20000,
-            messages=[{"role": "system", "content":"你是一个文章总结助手，负责将文章内容整理成：一句话总结、重要要点、灵感与启发这三个部分内容"},
-                {"role":"user","content":"请按照格式输出为排版美观的纯文本格式：\n\n# 一句话总结\n\n# 重要要点\n\n# 灵感与启发\n\n："+markdown_content},
-                ],
-        )
-        outputtext = completion.choices[0].message.content
-
-   
-        return outputtext
 
 @app.route('/summary', methods=['POST'])
 @require_apikey
@@ -75,13 +51,26 @@ def summary_api():
     original_url = data.get('url')
     if not original_url:
         return {"error": "未提供URL。"}, 400
-
-    summary = get_summary(original_url)
-    if summary is None:
-        return {"error": "生成摘要失败"}, 500
-
+  
+    elif original_url.startswith("https://www.bilibili.com/"):
+        summary = get_bilibili_summary(original_url)
+        if summary is None:
+            return {"error": "生成笔记失败"}, 500
+        return jsonify({"summary": summary})
     
-    return jsonify({"summary": summary})
+    elif original_url.startswith("https://www.youtube.com/"):
+        summary = get_youtube_summary(original_url)
+        if summary is None:
+            return {"error": "生成笔记失败"}, 500
+        return jsonify({"summary": summary})
+
+    else:
+        summary = get_summary(original_url)
+        if summary is None:
+            return {"error": "生成笔记失败"}, 500
+        return jsonify({"summary": summary})
+
+  
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)

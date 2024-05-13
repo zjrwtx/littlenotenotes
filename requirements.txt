@@ -3,3 +3,6 @@ openai
 flask
 requests
 flask-cors
+bcut-asr-branch
+bilix
+youtube-transcript-api
