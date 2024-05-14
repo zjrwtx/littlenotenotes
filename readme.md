@@ -2,7 +2,7 @@
 
 <a name="N7e9u"></a>
 # 一句话总结
-发一个链接即可轻松生成对应的内容笔记！支持公众号、知乎、bilibili、youtube、论文等内容笔记生成
+小纸条笔记后端核心AI业务算法开源：发一个链接即可轻松生成对应的内容笔记！支持公众号、知乎、bilibili、youtube、论文等内容笔记生成
 <a name="DaZLz"></a>
 # 支持生成笔记的内容：
 网页（包括但不限于微信公众号、知乎、新闻平台的内容等）<br />论文（pubmed、nature、cell等）<br />bilibili、youtube视频
